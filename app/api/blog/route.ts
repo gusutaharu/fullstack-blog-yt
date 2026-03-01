@@ -13,11 +13,31 @@ export async function main() {
   }
 }
 
+// GETリクエストで全てのブログ投稿を取得
+
 export const GET = async (req: Request) => {
   try {
     await main();
     const posts = await prisma.post.findMany();
     return NextResponse.json({ message: "Success", posts }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error", error: String(error) },
+      { status: 500 },
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+// POSTリクエストで新しいブログ投稿を作成
+
+export const POST = async (req: Request) => {
+  try {
+    const { title, description } = await req.json();
+    await main();
+    const posts = await prisma.post.create({ data: { title, description } });
+    return NextResponse.json({ message: "Success", posts }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { message: "Error", error: String(error) },
