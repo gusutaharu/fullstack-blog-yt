@@ -11,7 +11,7 @@ export async function main() {
 
 // GETリクエストで全てのブログ投稿を取得
 
-export const GET = async (req: Request) => {
+export const GET = async (req: Request, res: NextResponse) => {
   try {
     await main();
     const posts = await prisma.post.findMany();
@@ -28,7 +28,7 @@ export const GET = async (req: Request) => {
 
 // POSTリクエストで新しいブログ投稿を作成
 
-export const POST = async (req: Request) => {
+export const POST = async (req: Request, res: NextResponse) => {
   try {
     const { title, description } = await req.json();
     await main();
