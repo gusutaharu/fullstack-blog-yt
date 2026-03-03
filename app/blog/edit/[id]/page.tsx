@@ -22,6 +22,17 @@ const getBlogById = async (id: number) => {
   return data.post;
 };
 
+const deleteBlog = async (id: number) => {
+  const res = await fetch(`http://localhost:3000/api/blog/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return res.json();
+};
+
 const EditBlog = ({ params }: { params: Promise<{ id: number }> }) => {
   const { id } = use(params);
   const router = useRouter();
@@ -31,16 +42,18 @@ const EditBlog = ({ params }: { params: Promise<{ id: number }> }) => {
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
-    toast.loading("投稿を更新中...", { id: "post" });
-    await editBlog(
-      titleRef.current!.value,
-      descriptionRef.current!.value,
-      id,
-    );
-    toast.success("投稿が更新されました！", { id: "post" });
+    toast.loading("投稿を更新中...", { id: "edit" });
+    await editBlog(titleRef.current!.value, descriptionRef.current!.value, id);
+    toast.success("投稿が更新されました！", { id: "edit" });
 
     router.push("/");
     router.refresh();
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    toast.loading("投稿を削除中...", { id: "delete" });
+    await deleteBlog(id);
+    toast.success("投稿が削除されました！", { id: "delete" });
   };
 
   useEffect(() => {
@@ -77,7 +90,10 @@ const EditBlog = ({ params }: { params: Promise<{ id: number }> }) => {
             <button className="font-semibold px-4 py-2 shadow-xl bg-slate-200 rounded-lg m-auto hover:bg-slate-100">
               更新
             </button>
-            <button className="ml-2 font-semibold px-4 py-2 shadow-xl bg-red-400 rounded-lg m-auto hover:bg-slate-100">
+            <button
+              onClick={handleDelete}
+              className="ml-2 font-semibold px-4 py-2 shadow-xl bg-red-400 rounded-lg m-auto hover:bg-slate-100"
+            >
               削除
             </button>
           </form>
